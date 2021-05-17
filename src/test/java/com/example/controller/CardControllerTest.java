@@ -4,6 +4,7 @@ import com.example.entity.Card;
 import com.example.repository.CardRepository;
 import com.example.service.CardService;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -18,6 +19,7 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -64,5 +66,28 @@ class CardControllerTest {
 
         assertEquals(number, card.getNumber());
         assertEquals(title, card.getTitle());
+    }
+
+    @Test
+    void list() {
+        var list = Flux.just(
+                new Card("037856", "Tatiana Loaiza"),
+                new Card("128524", "Teresa Loaiza")
+        );
+
+        when(repository.findAll()).thenReturn(list);
+
+        webTestClient.get()
+                .uri("/cardlist")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$[0].title").isEqualTo("Tatiana Loaiza")
+                .jsonPath("$[0].number").isEqualTo("037856")
+                .jsonPath("$[1].number").isEqualTo("128524")
+                .jsonPath("$[1].title").isEqualTo("Teresa Loaiza");
+
+        verify(cardService).listAll();
+        verify(repository).findAll();
     }
 }
