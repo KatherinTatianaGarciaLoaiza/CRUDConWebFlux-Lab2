@@ -3,25 +3,24 @@ package com.example.entity;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.Date;
+
 @Document(collection = "cards")
 public class Card {
 
     @Id
     private String number;
-    private Type type;
+    private String type;
     private String code;
     private String date;
     private String title;
 
-    public Card(){
-
+    public Card() {
     }
-
-    public Card(String number,Type type, String code, String date, String title){
+    public Card(String number, String title){
         this.number = number;
-        this.type = type;
-        this.code = code;
-        this.date = date;
+        this.code = generateCode(number);
+        this.date = generateDate();
         this.title = title;
     }
 
@@ -33,11 +32,11 @@ public class Card {
         this.number = number;
     }
 
-    public Type getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(Type type) {
+    public void setType(String type) {
         this.type = type;
     }
 
@@ -63,5 +62,24 @@ public class Card {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    private String generateCode(String number){
+        return number.substring(0, 2);
+    }
+
+    private String generateDate(){
+        return new Date().toString();
+    }
+
+    @Override
+    public String toString() {
+        return "Card{" + '\n' +
+                "Number = " + number + '\n' +
+                "Code = " + code + '\n' +
+                "Type = " + type + '\n' +
+                "Date = " + date + '\n' +
+                "Title = " + code + '\n' +
+                '}';
     }
 }
