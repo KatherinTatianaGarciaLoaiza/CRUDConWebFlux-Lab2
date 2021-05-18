@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
@@ -43,27 +44,17 @@ class CardControllerTest {
     private CardRepository repository;
 
     @ParameterizedTest
-    @CsvSource({"063458, Tatiana Loaiza", "128975, Teresa Loaiza"})
-    void createCard(String number, String title, Integer times){
-        if (times == 0) {
-            when(repository.findByNumber(number)).thenReturn(Mono.just(new Card(number, title)));
-        }
-        if (times == 1) {
-            when(repository.findByNumber(number).thenReturn(Mono.empty()));
-        }
-
-        var request  = Mono.just(new Card(number,title));
-        webTestClient.post().uri("/card/createcard")
+    @CsvSource({"063458, Tatiana Loaiza"})
+    void createCard(String number, String title){
+        var request  = Mono.just(new Card("063458", "Tatiana Loaiza"));
+        when(repository.save(any(Card.class))).thenReturn(request);
+        webTestClient.post().uri("/card/createcard").contentType(MediaType.valueOf(MediaType.APPLICATION_JSON_VALUE))
                 .body(request, Card.class)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody().isEmpty();
-
+                .expectBody().returnResult();
         verify(cardService).insert(argumentCaptor.capture());
-        verify(repository, times(times)).save(any());
-
         var card = argumentCaptor.getValue().block();
-
         assertEquals(number, card.getNumber());
         assertEquals(title, card.getTitle());
     }
@@ -74,11 +65,9 @@ class CardControllerTest {
                 new Card("037856", "Tatiana Loaiza"),
                 new Card("128524", "Teresa Loaiza")
         );
-
         when(repository.findAll()).thenReturn(list);
-
         webTestClient.get()
-                .uri("/cardlist")
+                .uri("/card/cardlist")
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
@@ -93,6 +82,7 @@ class CardControllerTest {
 
     @Test
     void getCardById() {
+        when(repository.findById(anyString())).thenReturn(Mono.just(new Card("12857496", "Shiro Loaiza")));
         webTestClient.get()
                 .uri("/card/ById/12857496")
                 .exchange()
@@ -116,12 +106,32 @@ class CardControllerTest {
     @Test
     void update() {
         var request = Mono.just(new Card("12635241","Andrea Loaiza"));
+        when(repository.save(any(Card.class))).thenReturn(request);
         webTestClient.put()
                 .uri("/card/cardupdate")
                 .body(request, Card.class)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody().isEmpty();
+                .expectBody().returnResult();
     }
-    
+
+    @Test
+    void listByType() {
+        var list = Flux.just(
+                new Card("037856", "Tatiana Loaiza"),
+                new Card("128524", "Teresa Loaiza")
+        );
+        when(repository.findByType("MASTERCARD")).thenReturn(list);
+        webTestClient.get()
+                .uri("/card/getByType/MASTERCARD")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$[0].title").isEqualTo("Tatiana Loaiza")
+                .jsonPath("$[0].number").isEqualTo("037856");
+
+        verify(cardService).listCardByType("MASTERCARD");
+        verify(repository).findByType("MASTERCARD");
+    }
+
 }

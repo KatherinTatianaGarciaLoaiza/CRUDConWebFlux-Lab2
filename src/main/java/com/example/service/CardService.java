@@ -14,9 +14,6 @@ import static com.example.validateCard.Validate.validateCard;
 @Service
 public class CardService {
 
-    private final BiFunction<CardRepository, Card, Mono<Card>> validateBeforeInsert
-            =(repo, card) -> repo.findByNumber(card.getNumber());
-
     @Autowired
     private CardRepository repository;
 
