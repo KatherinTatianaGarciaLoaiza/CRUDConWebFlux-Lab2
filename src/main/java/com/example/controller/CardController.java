@@ -35,6 +35,11 @@ public class CardController {
         return cardService.deleteCard(id);
     }
 
-    //Read, Update, Delete, List
+
+    @PutMapping(value = "/cardupdate")
+    public Mono<Card> updateCard(@RequestBody Mono<Card> cardMono) {
+        return cardService.insert(cardMono);
+    }
+
 
 }

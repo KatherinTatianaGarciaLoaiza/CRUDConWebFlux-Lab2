@@ -112,4 +112,15 @@ class CardControllerTest {
                 .expectStatus().isOk()
                 .expectBody().isEmpty();
     }
+
+    @Test
+    void update() {
+        var request = Mono.just(new Card("12635241","Andrea Loaiza"));
+        webTestClient.put()
+                .uri("/card/cardupdate")
+                .body(request, Card.class)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody().isEmpty();
+    }
 }
