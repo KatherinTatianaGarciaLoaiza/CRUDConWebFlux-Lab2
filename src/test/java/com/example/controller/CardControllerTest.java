@@ -46,7 +46,7 @@ class CardControllerTest {
     @CsvSource({"063458, Tatiana Loaiza", "128975, Teresa Loaiza"})
     void createCard(String number, String title, Integer times){
         if (times == 0) {
-            when(repository.findByNumber(number)).thenReturn(Mono.just(new Card()));
+            when(repository.findByNumber(number)).thenReturn(Mono.just(new Card(number, title)));
         }
         if (times == 1) {
             when(repository.findByNumber(number).thenReturn(Mono.empty()));
@@ -89,5 +89,18 @@ class CardControllerTest {
 
         verify(cardService).listAll();
         verify(repository).findAll();
+    }
+
+    @Test
+    void getCardById() {
+        webTestClient.get()
+                .uri("/card/ById/12857496")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(Card.class)
+                .consumeWith(cardEntityExchangeResult -> {
+                    var card = cardEntityExchangeResult.getResponseBody();
+                    assert card == null;
+                });
     }
 }

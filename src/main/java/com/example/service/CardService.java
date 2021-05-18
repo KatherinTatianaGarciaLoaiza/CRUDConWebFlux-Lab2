@@ -31,4 +31,8 @@ public class CardService {
     public Flux<Card> listAll(){
         return repository.findAll();
     }
+
+    public Mono<Card> getCardById(String id){
+        return repository.findById(id);
+    }
 }

@@ -15,8 +15,6 @@ public class Card {
     private String date;
     private String title;
 
-    public Card() {
-    }
     public Card(String number, String title){
         this.number = number;
         this.code = generateCode(number);

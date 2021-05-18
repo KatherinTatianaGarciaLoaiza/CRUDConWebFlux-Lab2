@@ -24,6 +24,12 @@ public class CardController {
     public Flux<Card> cardList(){
         return cardService.listAll();
     }
+
+    @GetMapping(value = "/ById/{id}")
+    public  Mono<Card> getCardById(@PathVariable("id") String id){
+        return cardService.getCardById(id);
+    }
+
     //Read, Update, Delete, List
 
 }
