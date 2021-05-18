@@ -41,5 +41,9 @@ public class CardController {
         return cardService.insert(cardMono);
     }
 
+    @GetMapping(value = "/getByType/{type}")
+    public Flux<Card> lisCardtByType(@PathVariable("type") String type) {
+        return cardService.listCardByType(type);
+    }
 
 }

@@ -100,7 +100,7 @@ class CardControllerTest {
                 .expectBody(Card.class)
                 .consumeWith(cardEntityExchangeResult -> {
                     var card = cardEntityExchangeResult.getResponseBody();
-                    assert card == null;
+                    assert card != null;
                 });
     }
 
@@ -122,5 +122,22 @@ class CardControllerTest {
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody().isEmpty();
+    }
+
+    @Test
+    void getByType() {
+        var list = Flux.just(
+                new Card("03895623","Shiro Loaiza")
+        );
+
+        when(repository.findByType("MASTERCARD")).thenReturn(list);
+        webTestClient.get()
+                .uri("/card/getByType/MASTERCARD")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$[0].title").isEqualTo("Shiro Loaiza");
+
+        verify(cardService).listCardByType("MASTERCARD");
     }
 }

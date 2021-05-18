@@ -40,7 +40,9 @@ public class CardService {
         return repository.deleteById(id);
     }
 
-
+    public Flux<Card> listCardByType(String type){
+        return repository.findByType(type);
+    }
 
 
 }
