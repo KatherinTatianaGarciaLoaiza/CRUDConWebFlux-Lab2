@@ -103,4 +103,13 @@ class CardControllerTest {
                     assert card == null;
                 });
     }
+
+    @Test
+    void delete() {
+        webTestClient.delete()
+                .uri("/card/delete/12-3456")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody().isEmpty();
+    }
 }

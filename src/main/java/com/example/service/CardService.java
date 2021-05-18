@@ -35,4 +35,10 @@ public class CardService {
     public Mono<Card> getCardById(String id){
         return repository.findById(id);
     }
+
+    public Mono<Void> deleteCard(String id){
+        return repository.deleteById(id);
+    }
+
+
 }

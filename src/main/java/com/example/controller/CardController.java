@@ -30,6 +30,11 @@ public class CardController {
         return cardService.getCardById(id);
     }
 
+    @DeleteMapping(value = "/delete/{id}")
+    public Mono<Void> delete(@PathVariable("id") String id){
+        return cardService.deleteCard(id);
+    }
+
     //Read, Update, Delete, List
 
 }
